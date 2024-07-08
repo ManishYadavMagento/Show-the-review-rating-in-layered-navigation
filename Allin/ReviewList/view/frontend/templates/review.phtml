@@ -1,0 +1,125 @@
+<?php
+$productCollection = $block->getProductCollection();
+?>
+<?php if ($productCollection->getSize()): ?>
+<?php $count = 0; ?>
+    <?php foreach ($productCollection as $product): ?>
+	<?php
+	if ( $count > 10 ) { break; }
+	?>
+			<?php
+			$reviews = $block->getReviewsForProduct($product->getId());
+			if ($reviews->getSize()):
+			?>
+				<?php foreach ($reviews as $_review): ?>
+				<?php $count++; ?>
+				<?php $percentage = 0; ?>
+				<?php if (count($_review->getRatingVotes())): ?>
+					<?php foreach ($_review->getRatingVotes() as $_vote): ?>
+					<?php $percentage = $_vote->getPercent(); ?>
+					<?php endforeach; ?>
+				<?php endif; ?>
+				<?php if ($percentage < 100) { continue; } ?>
+					<div class="review_sidebar">
+						<div class="image_side_bar">
+							<img src="<?php echo $block->escapeUrl($block->getProductImageUrl($product)); ?>" alt="<?php echo $block->escapeHtml($product->getName()); ?>" />
+						</div>
+						<div class="contant_section">
+							<div class="product_nam_side">
+								<h3><a href="<? echo $product->getProductUrl() ?>"><?php echo $block->escapeHtml($product->getName()); ?></a></h3>
+							</div>
+							<div class="reviews-details">
+								<?php if (count($_review->getRatingVotes())): ?>
+									<div class="review-ratings">
+										<?php foreach ($_review->getRatingVotes() as $_vote): ?>
+											<div class="rating-summary item"
+												 itemprop="reviewRating" itemscope itemtype="http://schema.org/Rating">
+												<div class="rating-result"
+													 id="review_<?= /* @noEscape */ $_review->getReviewId()
+														. '_vote_'
+														. $_vote->getVoteId() ?>"
+													 title="<?= $escaper->escapeHtmlAttr($_vote->getPercent()) ?>%">
+													<meta itemprop="worstRating" content="1"/>
+													<meta itemprop="bestRating" content="100"/>
+													<span>
+														<span itemprop="ratingValue">
+															<?= $escaper->escapeHtml($_vote->getPercent()) ?>%
+														</span>
+													</span>
+												</div>
+												<?= /* @noEscape */ $secureRenderer->renderStyleAsTag(
+													'width:' . $_vote->getPercent() . '%',
+													'div#review_' . $_review->getReviewId()
+													. '_vote_' . $_vote->getVoteId() . ' span'
+												) ?>
+											</div>
+										<?php endforeach; ?>
+									</div>
+								<?php endif; ?>
+								<div class="send_review_title">
+									<strong><?php echo $block->escapeHtml($_review->getTitle()); ?></strong>
+								</div>
+								<div class="review_commmant">
+									<p><?php echo $block->escapeHtml($_review->getDetail()); ?></p>
+								</div>
+								<div class="review_user_name">
+									<h3><b><?php echo $block->escapeHtml($_review->getNickname()); ?></b></h3>
+								</div>
+							</div>
+						</div>
+					</div>
+				<?php endforeach; ?>
+            <?php endif; ?>
+    <?php endforeach; ?>
+<?php endif; ?>
+
+<style>
+    .review_sidebar{
+        
+        display: flex;
+        background-color: rgba(226,240,240,255);
+        margin: 10px 0px;
+    }
+    .image_side_bar{
+        width: 40%;
+    }
+    .contant_section{
+        width: 60%;
+    }
+     .review_commmant {
+         display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;  
+        overflow: hidden;
+        text-overflow: ellipsis;  
+           
+    }
+    .review_user_name {
+        margin-left: 65px;
+        }
+    .product_nam_side {
+        margin-bottom: 8px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;  
+        overflow: hidden;
+        text-overflow: ellipsis; 
+        margin-left: 5px;    
+    }
+    .send_review_title{
+        margin-top: 8px;
+        margin-bottom: 8px;
+        margin-bottom: 8px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;  
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-left: 5px;
+		clear: both;
+    }
+    .sidebar_star{
+        margin-left: 5px;
+    }
+    
+</style>
